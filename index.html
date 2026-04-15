@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SMORK MUSIC APP</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: system-ui;
+  background: radial-gradient(circle at top,#0a0f2c,#050816);
+  color: white;
+  overflow-x: hidden;
+}
+
+/* HEADER */
+header {
+  text-align: center;
+  padding: 20px;
+  font-weight: bold;
+  font-size: 20px;
+  animation: float 3s ease-in-out infinite;
+}
+
+/* FLOAT */
+@keyframes float {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+  100% { transform: translateY(0); }
+}
+
+/* LAYOUT */
+.container {
+  max-width: 500px;
+  margin: auto;
+  padding: 10px;
+}
+
+/* GLASS */
+.card {
+  background: rgba(0, 140, 255, 0.08);
+  border: 1px solid rgba(0, 140, 255, 0.25);
+  backdrop-filter: blur(12px);
+  border-radius: 16px;
+  padding: 15px;
+  margin-bottom: 15px;
+  box-shadow: 0 0 25px rgba(0,140,255,0.15);
+}
+
+/* BUTTONS */
+.btn {
+  background: linear-gradient(90deg,#007bff,#00c6ff);
+  border: none;
+  padding: 10px 14px;
+  border-radius: 10px;
+  color: white;
+  cursor: pointer;
+  transition: 0.3s;
+  margin: 3px;
+}
+
+.btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(0,140,255,0.5);
+}
+
+/* PROGRESS */
+.progress {
+  height: 6px;
+  background: #111;
+  border-radius: 20px;
+  overflow: hidden;
+  margin-top: 10px;
+}
+
+.progress-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg,#00c6ff,#007bff);
+  transition: 0.2s;
+}
+
+/* PLAYLIST */
+.song {
+  padding: 10px;
+  border-radius: 10px;
+  margin: 5px 0;
+  background: rgba(255,255,255,0.05);
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.song:hover {
+  transform: scale(1.03);
+  background: rgba(0,140,255,0.15);
+}
+
+.active {
+  border: 1px solid #00c6ff;
+  box-shadow: 0 0 15px rgba(0,140,255,0.4);
+}
+</style>
+</head>
+
+<body>
+
+<header>🎧 SMORK MUSIC APP</header>
+
+<div class="container">
+
+  <!-- PLAYER -->
+  <div class="card">
+    <h3 id="title">Track 1</h3>
+    <p id="artist">SMORK VIBES</p>
+
+    <audio id="audio"></audio>
+
+    <div class="progress">
+      <div id="bar" class="progress-bar"></div>
+    </div>
+
+    <div style="margin-top:10px;">
+      <button class="btn" onclick="prev()">⏮</button>
+      <button class="btn" onclick="togglePlay()">⏯</button>
+      <button class="btn" onclick="next()">⏭</button>
+    </div>
+  </div>
+
+  <!-- PLAYLIST -->
+  <div class="card">
+    <h3>Playlist</h3>
+    <div id="list"></div>
+  </div>
+
+</div>
+
+<script>
+/* 🎵 SONG DATA (ADD YOUR REAL FILES LATER) */
+let songs = [
+  {
+    name: "SMORK VIBE 1",
+    artist: "SMORK",
+    src: ""
+  },
+  {
+    name: "SMORK VIBE 2",
+    artist: "SMORK",
+    src: ""
+  },
+  {
+    name: "SMORK VIBE 3",
+    artist: "SMORK",
+    src: ""
+  }
+];
+
+let index = 0;
+let playing = false;
+
+const audio = document.getElementById("audio");
+
+/* LOAD SONG */
+function loadSong(i){
+  index = i;
+  document.getElementById("title").innerText = songs[i].name;
+  document.getElementById("artist").innerText = songs[i].artist;
+
+  document.querySelectorAll(".song").forEach((s,idx)=>{
+    s.classList.toggle("active", idx === i);
+  });
+
+  audio.src = songs[i].src;
+}
+
+/* PLAY / PAUSE */
+function togglePlay(){
+  if(!audio.src) return;
+
+  if(playing){
+    audio.pause();
+  }else{
+    audio.play();
+  }
+  playing = !playing;
+}
+
+/* NEXT */
+function next(){
+  index = (index + 1) % songs.length;
+  loadSong(index);
+  if(playing) audio.play();
+}
+
+/* PREV */
+function prev(){
+  index = (index - 1 + songs.length) % songs.length;
+  loadSong(index);
+  if(playing) audio.play();
+}
+
+/* UPDATE PROGRESS */
+audio.addEventListener("timeupdate", ()=>{
+  let percent = (audio.currentTime / audio.duration) * 100;
+  document.getElementById("bar").style.width = percent + "%";
+});
+
+/* BUILD LIST */
+function renderList(){
+  const list = document.getElementById("list");
+  list.innerHTML = "";
+
+  songs.forEach((s,i)=>{
+    list.innerHTML += `
+      <div class="song" onclick="loadSong(${i})">
+        🎵 ${s.name}
+      </div>
+    `;
+  });
+}
+
+renderList();
+loadSong(0);
+</script>
+
+</body>
+  </html>
